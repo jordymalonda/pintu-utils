@@ -1,0 +1,22 @@
+version: '3'
+services:
+  nodejs:
+    image: bigwisu/pm2:8.9.4
+    container_name: __CONTAINER_NAME__
+    ports:
+      - "__EXTERNAL_PORT__:3000"
+    volumes:
+      - ./app:/app
+    entrypoint:
+      - pm2
+      - start
+      - app.js
+      - -i
+      - '__PM2_PROCESSES__'
+      - --name=__PM2_PROCESS_NAME__
+      - --no-daemon
+
+networks:
+  default:
+    external:
+      name: nginx-proxy

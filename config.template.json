@@ -1,0 +1,33 @@
+{
+  "PORT": "3000",
+
+  "DB_HOST": "__DB_HOST__",
+  "DB_PORT": "__DB_PORT__",
+  "DB_NAME": "__DB_NAME__",
+  "DB_USER": "__DB_USER__",
+  "DB_PASS": "__DB_PASS__",
+
+  "DOCS_VERSION": "1.0.0",
+  "DOCS_TITLE": "Pintu API Documentation",
+  "DOCS_USER": "dev",
+  "DOCS_PASSWORD": "supersecretpassword",
+
+  "BCRYPT_SALT_ROUND": 10,
+
+  "JWT_SECRET": "secret123",
+
+  "TWILIO_ACC_SID": "AC4986cc42c2ca399c0e3eee444b17f13e",
+  "TWILIO_AUTH_TOKEN": "676dceb58ae2b877acf0d259fb6958d7",
+  "TWILIO_NUMBER": "+14053345303",
+
+  "LOG_DIR": "logs",
+
+  "COGNITO_API_HOST": "__COGNITO_API_HOST__",
+  "COGNITO_API_BASIC_AUTH_USER": "__COGNITO_API_BASIC_AUTH_USER__",
+  "COGNITO_API_BASIC_AUTH_PASS": "__COGNITO_API_BASIC_AUTH_PASS__",
+
+  "COE_API_HOST": "__COE_API_HOST__",
+  "SERVICE_INBOX": "__SERVICE_INBOX__",
+
+  "SERVICE_EMAIL": "__SERVICE_EMAIL__"
+}
