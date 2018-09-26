@@ -39,7 +39,7 @@ const indicesController = {
         }
         finalResult = temp;
       }
-console.log('test CI');
+
       return res.status(httpStatus.ok).json({
         status: httpStatus.ok,
         success: true,
