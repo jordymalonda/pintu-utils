@@ -27,10 +27,18 @@ const indicesController = {
 
     const result = await request(options);
 
+    const temp = [];
+    for (let index = 0; index < result.data.length; index += 1) {
+      const set = result.data[index].time.substr(14, 2);
+      if (set % req.query.interval === 0) {
+        temp.push(result.data[index]);
+      }
+    }
+
     return res.status(httpStatus.ok).json({
       status: httpStatus.ok,
       success: true,
-      data: result
+      data: temp
     });
   }
 };
