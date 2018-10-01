@@ -199,7 +199,7 @@ const controller = {
         method: 'POST',
         json: true,
         headers: takeHeader,
-        body: bodyData
+        body: takeBody
       };
 
       const takeResult = await request(takeOptions);
