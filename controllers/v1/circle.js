@@ -130,7 +130,10 @@ const controller = {
   takeQuote: async (req, res) => {
     try {
       req.checkBody({
-        quote_id: { notEmpty: true, errorMessage: 'quote_id field is required' },
+        pair: { notEmpty: true, errorMessage: 'pair field is required' },
+        side: { notEmpty: true, errorMessage: 'side field is required' },
+        volume: { notEmpty: true, errorMessage: 'volume field is required' },
+        value: { notEmpty: true, errorMessage: 'value field is required' }
       });
 
       const errors = req.validationErrors();
@@ -145,9 +148,12 @@ const controller = {
       const milliseconds = new Date().getTime();
 
       const bodyData = {
-        url: `${config.get('CIRCLE_HOST')}/takeQuote`,
+        url: `${config.get('CIRCLE_HOST')}/newQuote`,
         nonce: milliseconds,
-        quote_id: req.body.quote_id
+        pair: req.body.pair,
+        side: req.body.side,
+        volume: req.body.volume,
+        value: req.body.value
       };
 
       const apiSecret = config.get('CIRCLE_SECRET');
@@ -161,7 +167,7 @@ const controller = {
       };
 
       const options = {
-        url: `${config.get('CIRCLE_HOST')}/takeQuote`,
+        url: `${config.get('CIRCLE_HOST')}/newQuote`,
         method: 'POST',
         json: true,
         headers: headerData,
@@ -170,10 +176,38 @@ const controller = {
 
       const result = await request(options);
 
+      const getNonce = new Date().getTime();
+
+      const takeBody = {
+        url: `${config.get('CIRCLE_HOST')}/takeQuote`,
+        nonce: getNonce,
+        quote_id: result.quote_id
+      };
+
+      const secret = config.get('CIRCLE_SECRET');
+      const sign = crypto.createHmac('sha256', secret).update(JSON.stringify(takeBody)).digest('base64');
+
+      const takeHeader = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-CRCL-APIKEY': config.get('CIRCLE_KEY'),
+        'X-CRCL-SIGNATURE': sign
+      };
+
+      const takeOptions = {
+        url: `${config.get('CIRCLE_HOST')}/takeQuote`,
+        method: 'POST',
+        json: true,
+        headers: takeHeader,
+        body: bodyData
+      };
+
+      const takeResult = await request(takeOptions);
+
       return res.status(httpStatus.ok).json({
         status: httpStatus.ok,
         success: true,
-        data: result
+        data: takeResult
       });
     } catch (e) {
       return res.status(httpStatus.internalServerError).json({
