@@ -132,5 +132,5 @@ const controller = {
 
 module.exports = (router) => {
   router.get('/', controller.getTrades);
-//   router.post('/check', indicesController.check);
+  router.post('/newQuote', controller.newQuote);
 };
