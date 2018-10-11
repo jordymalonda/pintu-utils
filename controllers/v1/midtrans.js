@@ -8,7 +8,7 @@ const logger = require('./../../libs/logger');
 const controller = {
   callback: async (req, res) => {
     try {
-      logger.info(`MIDTRANS CALLBACK: ${JSON.stringify(req, null, 2)}`);
+      logger.info(`MIDTRANS CALLBACK: ${JSON.stringify(req.body, null, 2)}`);
       return res.status(httpStatus.ok).json({
         status: httpStatus.ok,
         success: true
