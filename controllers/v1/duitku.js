@@ -25,7 +25,7 @@ const controller = {
     }
   },
 
-  inquiry: async (req, res) => {
+  inquiryFirst: async (req, res) => {
     const merchantKey = config.get('DUITKU_API_KEY');
     try {
       req.checkBody({
@@ -91,6 +91,61 @@ const controller = {
         message: result
       });
     } catch (e) {
+      return res.status(httpStatus.internalServerError).json({
+        status: httpStatus.internalServerError,
+        success: false,
+        message: e.message,
+        code: errorCodes.internalServerError
+      });
+    }
+  },
+
+  inquiry: async (req, res) => {
+    const merchantKey = config.get('DUITKU_API_KEY');
+    try {
+      logger.info(`DUITKU INQUIRY: ${JSON.stringify(req.body, null, 2)}`);
+      req.checkBody({
+        action: { notEmpty: true, errorMessage: 'action field is required' },
+        merchantCode: { notEmpty: true, errorMessage: 'merchantCode field is required' },
+        bin: { notEmpty: true, errorMessage: 'bin field is required' },
+        vaNo: { notEmpty: true, errorMessage: 'vaNo field is required' },
+        session: { notEmpty: true, errorMessage: 'session field is required' },
+        signature: { notEmpty: false, errorMessage: 'signature field is required' }
+      });
+
+      const errors = req.validationErrors();
+      if (errors) {
+        return res.status(httpStatus.badRequest).json({
+          status: httpStatus.badRequest,
+          success: false,
+          message: errors,
+          code: errorCodes.badRequest
+        });
+      }
+
+      const concatSign = `${req.body.merchantCode}${req.body.action}${req.body.vaNo}${req.body.session}${merchantKey}`;
+
+      const sign = crypto.createHash('md5').update(concatSign).digest('hex');
+
+      const responseParam = {
+        vaNo: req.body.vaNo,
+        name: 'Jordy Malonda',
+        amount: 100000,
+        merchantOrderId: 'ORDER-1000',
+        statusCode: '00',
+        statusMessage: 'SUCCESS'
+      };
+
+      if (sign !== req.body.signature) {
+        return res.status(httpStatus.ok).json({
+          status: httpStatus.badRequest,
+          success: false,
+          message: 'Invalid Signature'
+        });
+      }
+      return res.status(httpStatus.ok).json(responseParam);
+    } catch (e) {
+      logger.info(`ERROR DUITKU INQUIRY: ${JSON.stringify(e.message, null, 2)}`);
       return res.status(httpStatus.internalServerError).json({
         status: httpStatus.internalServerError,
         success: false,
