@@ -3,6 +3,7 @@ const { httpStatus, errorCodes } = require('./../../configs/codes');
 const config = require('../../config');
 const firebase = require('firebase');
 const admin = require('firebase-admin');
+const logger = require('./../../libs/logger');
 
 const credential = {
   apiKey: config.get('FIREBASE_API_KEY'),
@@ -16,6 +17,7 @@ firebase.initializeApp(credential);
 
 const controller = {
   signin: async (req, res) => {
+    logger.info(`REQUEST LOGIN ${req.connection.remoteAddress}: ${JSON.stringify(req.body, null, 2)}`);
     try {
       req.checkBody({
         email: { notEmpty: true, errorMessage: 'email field is required', isEmail: true },
@@ -36,12 +38,14 @@ const controller = {
 
       const result = await firebase.auth().signInWithEmailAndPassword(email, password);
 
+      logger.info(`LOGIN RESPONSE ${req.connection.remoteAddress}: ${JSON.stringify(result, null, 2)}`);
       return res.status(httpStatus.ok).json({
         status: httpStatus.ok,
         success: true,
         data: result
       });
     } catch (e) {
+      logger.error(`LOGIN ERROR ${req.connection.remoteAddress}: ${JSON.stringify(e.message, null, 2)}`);
       return res.status(httpStatus.internalServerError).json({
         status: httpStatus.internalServerError,
         success: false,
@@ -52,6 +56,7 @@ const controller = {
   },
 
   create: async (req, res) => {
+    logger.info(`REQUEST LOGIN ${req.connection.remoteAddress}: ${JSON.stringify(req.body, null, 2)}`);
     try {
       req.checkBody({
         username: { notEmpty: true, errorMessage: 'username field is required' },
@@ -82,12 +87,14 @@ const controller = {
         displayName: req.body.username,
       });
 
+      logger.info(`LOGIN RESPONSE ${req.connection.remoteAddress}: ${JSON.stringify(result, null, 2)}`);
       return res.status(httpStatus.ok).json({
         status: httpStatus.ok,
         success: true,
         data: result
       });
     } catch (e) {
+      logger.info(`LOGIN ERROR ${req.connection.remoteAddress}: ${JSON.stringify(e.message, null, 2)}`);
       return res.status(httpStatus.internalServerError).json({
         status: httpStatus.internalServerError,
         success: false,
