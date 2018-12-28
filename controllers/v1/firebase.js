@@ -4,6 +4,16 @@ const config = require('../../config');
 const firebase = require('firebase');
 const admin = require('firebase-admin');
 
+const credential = {
+  apiKey: config.get('FIREBASE_API_KEY'),
+  authDomain: 'pintu-mobile-app.firebaseapp.com',
+  databaseURL: 'https://pintu-mobile-app.firebaseio.com',
+  projectId: 'pintu-mobile-app',
+  storageBucket: 'pintu-mobile-app.appspot.com',
+  messagingSenderId: config.get('FIREBASE_SENDER_ID')
+};
+firebase.initializeApp(credential);
+
 const controller = {
   signin: async (req, res) => {
     try {
@@ -23,16 +33,6 @@ const controller = {
       }
 
       const { email, password } = req.body;
-
-      const credential = {
-        apiKey: config.get('FIREBASE_API_KEY'),
-        authDomain: 'pintu-mobile-app.firebaseapp.com',
-        databaseURL: 'https://pintu-mobile-app.firebaseio.com',
-        projectId: 'pintu-mobile-app',
-        storageBucket: 'pintu-mobile-app.appspot.com',
-        messagingSenderId: config.get('FIREBASE_SENDER_ID')
-      };
-      firebase.initializeApp(credential);
 
       const result = await firebase.auth().signInWithEmailAndPassword(email, password);
 
