@@ -17,7 +17,8 @@ firebase.initializeApp(credential);
 
 const controller = {
   signin: async (req, res) => {
-    logger.info(`REQUEST LOGIN ${req.get('X-Real-IP')}: ${JSON.stringify(req.body, null, 2)}`);
+    const ip = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0] : req.connection.remoteAddress;
+    logger.info(`REQUEST LOGIN ${ip}: ${JSON.stringify(req.body, null, 2)}`);
     try {
       req.checkBody({
         email: { notEmpty: true, errorMessage: 'email field is required', isEmail: true },
@@ -38,14 +39,14 @@ const controller = {
 
       const result = await firebase.auth().signInWithEmailAndPassword(email, password);
 
-      logger.info(`LOGIN RESPONSE ${req.get('X-Real-IP')}: ${JSON.stringify(result, null, 2)}`);
+      logger.info(`LOGIN RESPONSE ${ip}: ${JSON.stringify(result, null, 2)}`);
       return res.status(httpStatus.ok).json({
         status: httpStatus.ok,
         success: true,
         data: result
       });
     } catch (e) {
-      logger.error(`LOGIN ERROR ${req.get('X-Real-IP')}: ${JSON.stringify(e.message, null, 2)}`);
+      logger.error(`LOGIN ERROR ${ip}: ${JSON.stringify(e.message, null, 2)}`);
       return res.status(httpStatus.internalServerError).json({
         status: httpStatus.internalServerError,
         success: false,
@@ -56,7 +57,8 @@ const controller = {
   },
 
   create: async (req, res) => {
-    logger.info(`REQUEST LOGIN ${req.get('X-Real-IP')}: ${JSON.stringify(req.body, null, 2)}`);
+    const ip = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0] : req.connection.remoteAddress;
+    logger.info(`REQUEST LOGIN ${ip}: ${JSON.stringify(req.body, null, 2)}`);
     try {
       req.checkBody({
         username: { notEmpty: true, errorMessage: 'username field is required' },
@@ -87,14 +89,14 @@ const controller = {
         displayName: req.body.username,
       });
 
-      logger.info(`LOGIN RESPONSE ${req.get('X-Real-IP')}: ${JSON.stringify(result, null, 2)}`);
+      logger.info(`LOGIN RESPONSE ${ip}: ${JSON.stringify(result, null, 2)}`);
       return res.status(httpStatus.ok).json({
         status: httpStatus.ok,
         success: true,
         data: result
       });
     } catch (e) {
-      logger.info(`LOGIN ERROR ${req.get('X-Real-IP')}: ${JSON.stringify(e.message, null, 2)}`);
+      logger.info(`LOGIN ERROR ${ip}: ${JSON.stringify(e.message, null, 2)}`);
       return res.status(httpStatus.internalServerError).json({
         status: httpStatus.internalServerError,
         success: false,
