@@ -5,25 +5,18 @@ const firebase = require('firebase');
 const admin = require('firebase-admin');
 const logger = require('./../../libs/logger');
 
-const adminCredential = {
-  credential: admin.credential.cert(config.get('FIREBASE_KEY')),
-  databaseURL: 'https://pintu-mobile-app.firebaseio.com'
+const credential = {
+  apiKey: config.get('FIREBASE_API_KEY'),
+  authDomain: 'pintu-mobile-app.firebaseapp.com',
+  databaseURL: 'https://pintu-mobile-app.firebaseio.com',
+  projectId: 'pintu-mobile-app',
+  storageBucket: 'pintu-mobile-app.appspot.com',
+  messagingSenderId: config.get('FIREBASE_SENDER_ID')
 };
-
-admin.initializeApp(adminCredential);
+firebase.initializeApp(credential);
 
 const controller = {
   signin: async (req, res) => {
-    const credential = {
-      apiKey: config.get('FIREBASE_API_KEY'),
-      authDomain: 'pintu-mobile-app.firebaseapp.com',
-      databaseURL: 'https://pintu-mobile-app.firebaseio.com',
-      projectId: 'pintu-mobile-app',
-      storageBucket: 'pintu-mobile-app.appspot.com',
-      messagingSenderId: config.get('FIREBASE_SENDER_ID')
-    };
-    firebase.initializeApp(credential);
-
     const ip = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0] : req.connection.remoteAddress;
     logger.info(`REQUEST LOGIN ${ip}: ${JSON.stringify(req.body, null, 2)}`);
     try {
@@ -82,6 +75,13 @@ const controller = {
           code: errorCodes.badRequest
         });
       }
+
+      const adminCredential = {
+        credential: admin.credential.cert(config.get('FIREBASE_KEY')),
+        databaseURL: 'https://pintu-mobile-app.firebaseio.com'
+      };
+
+      admin.initializeApp(adminCredential);
 
       const result = await admin.auth().createUser({
         email: req.body.email,
