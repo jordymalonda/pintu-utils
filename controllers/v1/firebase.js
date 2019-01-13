@@ -5,6 +5,13 @@ const firebase = require('firebase');
 const admin = require('firebase-admin');
 const logger = require('./../../libs/logger');
 
+const adminCredential = {
+  credential: admin.credential.cert(config.get('FIREBASE_KEY')),
+  databaseURL: 'https://pintu-mobile-app.firebaseio.com'
+};
+
+admin.initializeApp(adminCredential);
+
 const controller = {
   signin: async (req, res) => {
     const credential = {
@@ -75,13 +82,6 @@ const controller = {
           code: errorCodes.badRequest
         });
       }
-
-      const adminCredential = {
-        credential: admin.credential.cert(config.get('FIREBASE_KEY')),
-        databaseURL: 'https://pintu-mobile-app.firebaseio.com'
-      };
-
-      admin.initializeApp(adminCredential);
 
       const result = await admin.auth().createUser({
         email: req.body.email,
